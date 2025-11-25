@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hindi to Punjabi Translator</title>
+    <style>
+        :root {
+            --color-primary: #2563eb;
+            --color-primary-hover: #1d4ed8;
+            --color-success: #10b981;
+            --color-background: #f9fafb;
+            --color-surface: #ffffff;
+            --color-text: #111827;
+            --color-text-secondary: #6b7280;
+            --color-border: #e5e7eb;
+            --color-accent: #f59e0b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Oxygen', Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.95;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin-bottom: 20px;
+        }
+
+        .input-section {
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--color-text);
+            font-size: 0.95rem;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--color-border);
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 120px;
+            transition: border-color 0.2s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--color-primary);
+        }
+
+        .btn {
+            background: var(--color-primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            width: 100%;
+        }
+
+        .btn:hover {
+            background: var(--color-primary-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        .btn:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            border: 3px solid #f3f4f6;
+            border-top: 3px solid var(--color-primary);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .results {
+            display: none;
+        }
+
+        .results.active {
+            display: block;
+        }
+
+        .result-item {
+            margin-bottom: 20px;
+            padding: 16px;
+            background: #f9fafb;
+            border-radius: 8px;
+            border-left: 4px solid var(--color-primary);
+        }
+
+        .result-label {
+            font-weight: 600;
+            color: var(--color-text-secondary);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+
+        .result-value {
+            font-size: 1.1rem;
+            color: var(--color-text);
+            word-wrap: break-word;
+        }
+
+        .result-value.hindi {
+            font-size: 1.3rem;
+            direction: ltr;
+        }
+
+        .result-value.punjabi {
+            font-size: 1.3rem;
+            direction: ltr;
+        }
+
+        .method-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            background: var(--color-accent);
+            color: white;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .metric-box {
+            padding: 16px;
+            background: white;
+            border-radius: 8px;
+            border: 2px solid var(--color-border);
+            text-align: center;
+        }
+
+        .metric-label {
+            font-size: 0.85rem;
+            color: var(--color-text-secondary);
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+
+        .metric-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--color-primary);
+        }
+
+        .error {
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border-left: 4px solid #dc2626;
+        }
+
+        .examples {
+            margin-top: 20px;
+        }
+
+        .examples h3 {
+            margin-bottom: 12px;
+            color: var(--color-text);
+        }
+
+        .example-btn {
+            display: inline-block;
+            padding: 8px 16px;
+            margin: 4px;
+            background: #ede9fe;
+            color: #5b21b6;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .example-btn:hover {
+            background: #ddd6fe;
+            transform: translateY(-1px);
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌐 Hindi to Punjabi Translator</h1>
+            <p>Hybrid Translation System using Dictionary, EBMT, and NMT</p>
+        </div>
+
+        <div class="card">
+            <div class="input-section">
+                <div class="form-group">
+                    <label for="hindiText">Enter Hindi Text:</label>
+                    <textarea id="hindiText" placeholder="यहाँ हिंदी टेक्स्ट दर्ज करें..."></textarea>
+                </div>
+
+                <button class="btn" id="translateBtn">Translate to Punjabi</button>
+
+                <div class="examples">
+                    <h3>Try these examples:</h3>
+                    <button class="example-btn" data-text="तुम कैसे हो?">तुम कैसे हो?</button>
+                    <button class="example-btn" data-text="मैं ठीक हूँ, धन्यवाद।">मैं ठीक हूँ, धन्यवाद।</button>
+                    <button class="example-btn" data-text="खाना तैयार है.">खाना तैयार है.</button>
+                    <button class="example-btn" data-text="आज मौसम अच्छा है.">आज मौसम अच्छा है.</button>
+                </div>
+            </div>
+
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Translating...</p>
+            </div>
+
+            <div class="results" id="results">
+                <h2 style="margin-bottom: 20px; color: var(--color-text);">Translation Results</h2>
+
+                <div class="result-item">
+                    <div class="result-label">Original Hindi</div>
+                    <div class="result-value hindi" id="originalText"></div>
+                </div>
+
+                <div class="result-item">
+                    <div class="result-label">Translated Punjabi</div>
+                    <div class="result-value punjabi" id="translatedText"></div>
+                </div>
+
+                <div class="result-item">
+                    <div class="result-label">Translation Method</div>
+                    <span class="method-badge" id="methodUsed"></span>
+                </div>
+
+                <div id="metricsSection" style="display: none;">
+                    <div class="result-item">
+                        <div class="result-label">Reference Punjabi</div>
+                        <div class="result-value punjabi" id="referenceText"></div>
+                    </div>
+
+                    <div class="metrics">
+                        <div class="metric-box">
+                            <div class="metric-label">BLEU Score</div>
+                            <div class="metric-value" id="bleuScore">-</div>
+                        </div>
+                        <div class="metric-box">
+                            <div class="metric-label">chrF Score</div>
+                            <div class="metric-value" id="chrfScore">-</div>
+                        </div>
+                        <div class="metric-box">
+                            <div class="metric-label">Exact Match</div>
+                            <div class="metric-value" id="exactMatch">-</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="error" id="errorDiv" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script>
+        const translateBtn = document.getElementById('translateBtn');
+        const hindiText = document.getElementById('hindiText');
+        const loading = document.getElementById('loading');
+        const results = document.getElementById('results');
+        const errorDiv = document.getElementById('errorDiv');
+        const exampleBtns = document.querySelectorAll('.example-btn');
+
+        // Example button handlers
+        exampleBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                hindiText.value = btn.dataset.text;
+            });
+        });
+
+        translateBtn.addEventListener('click', async () => {
+            const text = hindiText.value.trim();
+
+            if (!text) {
+                alert('Please enter Hindi text to translate');
+                return;
+            }
+
+            // Show loading, hide results and errors
+            loading.classList.add('active');
+            results.classList.remove('active');
+            errorDiv.style.display = 'none';
+            translateBtn.disabled = true;
+
+            try {
+                const response = await fetch('/translate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ hindi_text: text })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Display results
+                    document.getElementById('originalText').textContent = data.original_hindi;
+                    document.getElementById('translatedText').textContent = data.translated_punjabi;
+                    document.getElementById('methodUsed').textContent = data.method_used;
+
+                    // Display metrics if available
+                    if (data.reference_punjabi) {
+                        document.getElementById('referenceText').textContent = data.reference_punjabi;
+                        document.getElementById('bleuScore').textContent = data.bleu_score;
+                        document.getElementById('chrfScore').textContent = data.chrf_score;
+                        document.getElementById('exactMatch').textContent = data.exact_match;
+                        document.getElementById('metricsSection').style.display = 'block';
+                    } else {
+                        document.getElementById('metricsSection').style.display = 'none';
+                    }
+
+                    results.classList.add('active');
+                } else {
+                    throw new Error(data.error || 'Translation failed');
+                }
+            } catch (error) {
+                errorDiv.textContent = 'Error: ' + error.message;
+                errorDiv.style.display = 'block';
+            } finally {
+                loading.classList.remove('active');
+                translateBtn.disabled = false;
+            }
+        });
+
+        // Enable translate on Enter key
+        hindiText.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                translateBtn.click();
+            }
+        });
+    </script>
+</body>
+</html>
